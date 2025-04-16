@@ -1,0 +1,8 @@
+*__pycache__
+
+# dataset
+datasets/stable_diffusion
+temp_frames
+
+agent_models/blip.py
+word_tag.py
