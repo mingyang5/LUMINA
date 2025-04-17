@@ -1,4 +1,15 @@
-# CSCE-670-Agentic-Retrieval
+# Incorporating Multi-Modality and Latent Representations for Image Retrieval
+
+**CSCE 670 — Information Storage & Retrieval**  
+*Course Project*
+
+**Team Members:**  
+- Yufeng Yang  
+- Mingyang Wu  
+- Yu-Hsuan Ho  
+- Yiming Xiao
+
+
 
 ## Environment
 
