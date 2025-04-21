@@ -6,8 +6,8 @@ from image_retrieval import run_dino_image_retrieval, get_image_files, text_imag
 
 from flask_cors import CORS
 
-# remote_server_ip = ""       # 10.xx.xx.xx
-remote_server_ip = "10.55.164.158"       # 10.xx.xx.xx
+remote_server_ip = ""       # 10.xx.xx.xx
+# remote_server_ip = "10.55.164.158"       # 10.xx.xx.xx
 
 app = Flask(__name__)
 CORS(app)
