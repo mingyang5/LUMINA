@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload and Retrieval</title>
+</head>
+<body>
+    <h2>Upload an Image for Retrieval</h2>
+    <input type="file" id="imageInput">
+    <button onclick="uploadAndSearch()">Start Retrieval</button>
+
+    <h3>Retrieval Results:</h3>
+    <div id="results"></div>
+
+    <script>
+        async function uploadAndSearch() {
+            const fileInput = document.getElementById("imageInput");
+            if (fileInput.files.length === 0) {
+                alert("Please select an image");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("query_image", fileInput.files[0]);
+            
+            const response = await fetch("http://10.xxx.xxx.xxx:5001/api/image_image_retrieval", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            const resultDiv = document.getElementById("results");
+            resultDiv.innerHTML = "";
+
+            data.results.forEach((item, idx) => {
+                const img = document.createElement("img");
+                img.src = item.path;
+                img.style.width = "200px";
+                resultDiv.appendChild(img);
+                resultDiv.innerHTML += `<p>Top-${idx + 1} | Distance: ${item.distance.toFixed(4)}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>

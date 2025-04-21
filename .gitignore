@@ -3,6 +3,7 @@
 # dataset
 datasets/stable_diffusion
 temp_frames
+uploads
 
 agent_models/blip.py
 word_tag.py
