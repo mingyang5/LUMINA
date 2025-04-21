@@ -59,7 +59,7 @@ pip install -U flash-attn --no-build-isolation
 
 # The following implementation enables web-based image retrieval, but it does not use a VLM verifier.
 # first step: 本地运行 index.html
-# Please first modify the `IP address` on line 25 of index.html.
+# Please first modify the `IP address` on line 187 of index.html.
 # The IP address should be the address of your remote server.
 cd xx/image_retrieval 
 python3 -m http.server 8000
@@ -67,7 +67,7 @@ python3 -m http.server 8000
 
 
 # second step: 远端服务器运行：python image_retrieval_api.py
-# Please modify the `remote_server_ip` on line 9 of index.html.
+# Please modify the `remote_server_ip` on line 9 of image_retrieval_api.py.
 python image_retrieval_api.py
 
 ```

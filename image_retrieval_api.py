@@ -48,7 +48,7 @@ def image_image_retrieval():
     return jsonify({'results': results})
 
 
-@app.route('/static_dataset/<path:filename>')           # 访问静态图像的接口 -> 取出文件
+@app.route('/static_dataset/<path:filename>')               # 访问静态图像的接口 -> 取出文件
 def serve_static_dataset(filename):
     full_path = os.path.join(DATASET_FOLDER, filename)
     if not os.path.exists(full_path):

@@ -1,17 +1,179 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Image Upload and Retrieval</title>
+    <title>Information Retrieval</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f6f2;
+            color: #5c4033;
+        }
+        
+        .top-bar {
+            background-color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .top-bar .title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #5c4033;
+        }
+
+        .top-bar .subtitle {
+            font-size: 14px;
+            color: #5c4033;
+            margin-top: 2px;
+        }
+
+        .top-bar .auth-links a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #5c4033;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .main-container {
+            max-width: 700px;
+            background-color: white;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .divider {
+            width: 80px;
+            height: 4px;
+            background-color: #8b5e3c;
+            margin: 10px auto 30px auto;
+            border-radius: 2px;
+        }
+
+        .section-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .custom-button {
+            background-color: #8b5e3c;
+            color: white;
+            padding: 12px 0;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            display: block;
+            border: none;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        #uploadedImage {
+            margin: 16px auto 30px auto;
+            max-width: 300px;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2);
+        }
+
+        .retrieved-images {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .retrieved-images img {
+            width: 130px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .retrieved-images p {
+            font-size: 12px;
+            color: #444;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Upload an Image for Retrieval</h2>
-    <input type="file" id="imageInput">
-    <button onclick="uploadAndSearch()">Start Retrieval</button>
 
-    <h3>Retrieval Results:</h3>
-    <div id="results"></div>
+    <div class="top-bar">
+        <div>
+            <div class="title">Image Genie</div>
+            <div class="subtitle">Your image. Retrieved smartly.</div>
+        </div>
+        <div class="auth-links">
+            <a href="#">Login</a>
+            <a href="#">Sign Up</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="main-title">Information Retrieval</div>
+        <div class="divider"></div>
+
+        <div class="section-label">Upload your image</div>
+
+        <div class="file-upload-wrapper">
+            <button class="custom-button">Choose Image</button>
+            <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+        </div>
+
+        <img id="uploadedImage" src="" alt="" style="display:none;">
+
+        <div class="section-label">Then click to retrieve similar images</div>
+        <button class="custom-button" onclick="uploadAndSearch()">Start Retrieval</button>
+        
+        <div id="results"></div>
+    </div>
 
     <script>
+        function previewImage() {
+            const fileInput = document.getElementById("imageInput");
+            const uploadedImage = document.getElementById("uploadedImage");
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.style.display = 'block';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
         async function uploadAndSearch() {
             const fileInput = document.getElementById("imageInput");
             if (fileInput.files.length === 0) {
@@ -21,7 +183,7 @@
 
             const formData = new FormData();
             formData.append("query_image", fileInput.files[0]);
-            
+
             const response = await fetch("http://10.xxx.xxx.xxx:5001/api/image_image_retrieval", {
                 method: "POST",
                 body: formData
@@ -29,16 +191,28 @@
 
             const data = await response.json();
             const resultDiv = document.getElementById("results");
-            resultDiv.innerHTML = "";
+            resultDiv.innerHTML = "<h3>Top 5 Retrieved Results</h3>";
 
-            data.results.forEach((item, idx) => {
+            const container = document.createElement("div");
+            container.className = "retrieved-images";
+
+            data.results.slice(0, 5).forEach((item, idx) => {
+                const wrapper = document.createElement("div");
+
                 const img = document.createElement("img");
                 img.src = item.path;
-                img.style.width = "200px";
-                resultDiv.appendChild(img);
-                resultDiv.innerHTML += `<p>Top-${idx + 1} | Distance: ${item.distance.toFixed(4)}</p>`;
+
+                const label = document.createElement("p");
+                label.textContent = `Top-${idx + 1} | Dist: ${item.distance.toFixed(4)}`;
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(label);
+                container.appendChild(wrapper);
             });
+
+            resultDiv.appendChild(container);
         }
     </script>
+
 </body>
 </html>
