@@ -41,6 +41,7 @@ def run_dino_image_retrieval(image_folder, query_image, device):
     return search_and_visualize(index, query_vec, image_folder, topk=5, visualize=False)
 
 def text_image_retrieval(image_folder, text_query, device):
+    results = {}
     print("\n[CLIP Retrieval]")
     results["clip"] = run_clip_retrieval(image_folder, text_query, device)
 
@@ -66,9 +67,10 @@ def text_image_retrieval(image_folder, text_query, device):
     for i, (path, (dist, model_name)) in enumerate(sorted_results):
         print(f"{i+1}. [{model_name.upper()}] {path} | Distance: {dist:.4f}")
     
-    return sorted_results
+    return sorted_results, results
 
 def image_image_retrieval(image_folder, image_query_path, device):
+    results = {}
     print("\n[DINOv2 Retrieval]")
     results["dino"] = run_dino_image_retrieval(image_folder, image_query_path, device)
 
@@ -87,6 +89,8 @@ def image_image_retrieval(image_folder, image_query_path, device):
     sorted_results = sorted(unique_results.items(), key=lambda x: x[1][0])
     for i, (path, (dist, model_name)) in enumerate(sorted_results):
         print(f"{i+1}. [{model_name.upper()}] {path} | Distance: {dist:.4f}")
+    
+    return sorted_results, results
 
 
 if __name__ == "__main__":
@@ -99,6 +103,7 @@ if __name__ == "__main__":
     parser.add_argument("--image_image_retrieval", action="store_true")
     
     # vision-language model
+    parser.add_argument("--vlm_verifer", action="store_true")
     parser.add_argument("--vlm_model_id", type=str, default="Qwen/Qwen2.5-VL-7B-Instruct")  # model_id = "Qwen/Qwen2.5-VL-3B-Instruct"
     
     args = parser.parse_args()
@@ -106,13 +111,33 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     image_folder = get_image_files(args.image_folder_path)
 
-    results = {}
     args.text_image_retrieval = True    # if debug
     if args.text_image_retrieval:
-        sorted_results = text_image_retrieval(image_folder, args.text_query, device)
+        sorted_results, results = text_image_retrieval(image_folder, args.text_query, device)
 
     if args.image_image_retrieval and args.image_query_path:
-        sorted_results = image_image_retrieval(image_folder, args.image_query_path, device)
-
-    image_list = [path for path, (dist, model_name) in sorted_results]
+        sorted_results, results = image_image_retrieval(image_folder, args.image_query_path, device)
     
+    # vlm verifier
+    image_list = [path for path, (dist, model_name) in sorted_results]
+    if args.vlm_verifer:
+        image_list = [path for path, (dist, model_name) in sorted_results]
+        system_prompt = (
+            "You are a helpful assistant that can understand visual content. "
+            "You will be shown several image frames. Your task is to identify which image best matches the given text query. "
+            "Only output the frame ID of the best matching image. Do not explain your reasoning."
+        )
+
+        user_prompt = (
+            "Please examine all the provided images and select the one that best corresponds to the following text.\n\n"
+            "Example:\n"
+            "Images: <frame 0>, <frame 1>, <frame 2>\n"
+            "Text query: 'A cat sitting on a sofa'\n"
+            "Answer: <frame 1>\n\n"
+            "Now for the following input:"
+        )
+        
+        prefer_frame = qwen_vlm_verifier(system_prompt, user_prompt, args.text_query, image_list, args.vlm_model_id)
+        
+        # user_preference_image_path
+        print(prefer_frame)

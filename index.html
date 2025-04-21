@@ -1,218 +1,328 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Information Retrieval</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f8f6f2;
-            color: #5c4033;
-        }
-        
-        .top-bar {
-            background-color: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
+  <title>Information Retrieval</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f6f2;
+      color: #5c4033;
+    }
 
-        .top-bar .title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #5c4033;
-        }
+    .top-bar {
+      background-color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
 
-        .top-bar .subtitle {
-            font-size: 14px;
-            color: #5c4033;
-            margin-top: 2px;
-        }
+    .top-bar .title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #5c4033;
+    }
 
-        .top-bar .auth-links a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #5c4033;
-            font-weight: bold;
-            font-size: 14px;
-        }
+    .top-bar .subtitle {
+      font-size: 14px;
+      color: #5c4033;
+      margin-top: 2px;
+    }
 
-        .main-container {
-            max-width: 700px;
-            background-color: white;
-            margin: 50px auto;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+    .top-bar .auth-links a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #5c4033;
+      font-weight: bold;
+      font-size: 14px;
+    }
 
-        .main-title {
-            text-align: center;
-            font-size: 26px;
-            font-weight: bold;
-        }
+    .main-container {
+      max-width: 700px;
+      background-color: white;
+      margin: 30px auto;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
-        .divider {
-            width: 80px;
-            height: 4px;
-            background-color: #8b5e3c;
-            margin: 10px auto 30px auto;
-            border-radius: 2px;
-        }
+    .main-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
 
-        .section-label {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+    .divider {
+      width: 80px;
+      height: 4px;
+      background-color: #8b5e3c;
+      margin: 10px auto 30px auto;
+      border-radius: 2px;
+    }
 
-        .file-upload-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-        }
+    .section-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
 
-        .file-upload-wrapper input[type="file"] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
+    .custom-button {
+      background-color: #8b5e3c;
+      color: white;
+      padding: 12px 0;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      display: block;
+      border: none;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
 
-        .custom-button {
-            background-color: #8b5e3c;
-            color: white;
-            padding: 12px 0;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            display: block;
-            border: none;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
 
-        #uploadedImage {
-            margin: 16px auto 30px auto;
-            max-width: 300px;
-            display: block;
-            border-radius: 8px;
-            box-shadow: 0 0 4px rgba(0,0,0,0.2);
-        }
+    .file-upload-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
 
-        .retrieved-images {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+    .file-upload-wrapper input[type="file"] {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
 
-        .retrieved-images img {
-            width: 130px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
+    #uploadedImage {
+      margin: 16px auto 30px auto;
+      max-width: 300px;
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    }
 
-        .retrieved-images p {
-            font-size: 12px;
-            color: #444;
-            margin-top: 5px;
-        }
-    </style>
+    .retrieved-images {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .retrieved-images img {
+      width: 130px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .retrieved-images p {
+      font-size: 12px;
+      color: #444;
+      margin-top: 5px;
+    }
+
+    .loading-text {
+        font-size: 14px;
+        margin-bottom: 10px;
+        display: none;
+    }
+    .logo-img {
+        height: 40px;
+        margin-right: 15px;
+    }
+
+  </style>
 </head>
 <body>
-
-    <div class="top-bar">
+  <div class="top-bar">
+    <div style="display: flex; align-items: center;">
+        <img src="assets/project_logo.png" alt="Logo" class="logo-img">
         <div>
-            <div class="title">Image Genie</div>
-            <div class="subtitle">Your image. Retrieved smartly.</div>
-        </div>
-        <div class="auth-links">
-            <a href="#">Login</a>
-            <a href="#">Sign Up</a>
+          <div class="title">Information Genie</div>
+          <div class="subtitle">Your information. Retrieved smartly.</div>
         </div>
     </div>
-
-    <div class="main-container">
-        <div class="main-title">Information Retrieval</div>
-        <div class="divider"></div>
-
-        <div class="section-label">Upload your image</div>
-
-        <div class="file-upload-wrapper">
-            <button class="custom-button">Choose Image</button>
-            <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
-        </div>
-
-        <img id="uploadedImage" src="" alt="" style="display:none;">
-
-        <div class="section-label">Then click to retrieve similar images</div>
-        <button class="custom-button" onclick="uploadAndSearch()">Start Retrieval</button>
-        
-        <div id="results"></div>
+    
+    <div class="auth-links">
+      <a href="#">Login</a>
+      <a href="#">Sign Up</a>
     </div>
+  </div>
 
-    <script>
-        function previewImage() {
-            const fileInput = document.getElementById("imageInput");
-            const uploadedImage = document.getElementById("uploadedImage");
+  <div class="main-container">
+    <div class="main-title">Text-to-Image Retrieval</div>
+    <div class="divider"></div>
+    <div class="section-label">Enter your prompt</div>
+    <input type="text" id="textQuery" placeholder="e.g., a man riding a bicycle in the city...">
+    <button class="custom-button" onclick="textSearch()">Search by Text</button>
+    <div id="text-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
+    <div id="text-results"></div>
+  </div>
 
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    uploadedImage.src = e.target.result;
-                    uploadedImage.style.display = 'block';
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            }
-        }
+  <div class="main-container">
+    <div class="main-title">Image-to-Image Retrieval</div>
+    <div class="divider"></div>
+    <div class="section-label">Upload your image</div>
+    <div class="file-upload-wrapper">
+      <button class="custom-button">Choose Image</button>
+      <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+    </div>
+    <img id="uploadedImage" src="" alt="" style="display:none;">
+    <div class="section-label">Then click to retrieve similar images</div>
+    <button class="custom-button" onclick="uploadAndSearch()">Start Retrieval</button>
+    <div id="image-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
+    <div id="results"></div>
+  </div>
 
-        async function uploadAndSearch() {
-            const fileInput = document.getElementById("imageInput");
-            if (fileInput.files.length === 0) {
-                alert("Please select an image");
-                return;
-            }
+  <div class="main-container">
+    <div class="main-title">Image-to-Video Retrieval</div>
+    <div class="divider"></div>
+    <div class="section-label">Upload your video and query image</div>
+    <div class="file-upload-wrapper">
+      <button class="custom-button">Choose Video</button>
+      <input type="file" id="videoInput" accept="video/*">
+    </div>
+    <div class="file-upload-wrapper">
+      <button class="custom-button">Choose Query Image</button>
+      <input type="file" id="queryImageInput" accept="image/*">
+    </div>
+    <button class="custom-button" onclick="uploadVideoAndImage()">Search in Video</button>
+    <div id="video-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
+    <div id="video-results"></div>
+  </div>
 
-            const formData = new FormData();
-            formData.append("query_image", fileInput.files[0]);
+  <script>
+    function startLoadingAnimation(id) {
+      const el = document.getElementById(id);
+      el.style.display = "block";
+      let dots = 0;
+      el.innerText = "processing";
+      el._interval = setInterval(() => {
+        dots = (dots + 1) % 4;
+        el.innerText = "processing" + ".".repeat(dots);
+      }, 500);
+    }
 
-            const response = await fetch("http://10.xxx.xxx.xxx:5001/api/image_image_retrieval", {
-                method: "POST",
-                body: formData
-            });
+    function stopLoadingAnimation(id) {
+      const el = document.getElementById(id);
+      clearInterval(el._interval);
+      el.style.display = "none";
+    }
 
-            const data = await response.json();
-            const resultDiv = document.getElementById("results");
-            resultDiv.innerHTML = "<h3>Top 5 Retrieved Results</h3>";
+    function previewImage() {
+      const fileInput = document.getElementById("imageInput");
+      const uploadedImage = document.getElementById("uploadedImage");
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          uploadedImage.src = e.target.result;
+          uploadedImage.style.display = 'block';
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      }
+    }
 
-            const container = document.createElement("div");
-            container.className = "retrieved-images";
+    async function uploadAndSearch() {
+      const fileInput = document.getElementById("imageInput");
+      if (fileInput.files.length === 0) {
+        alert("Please select an image");
+        return;
+      }
+      startLoadingAnimation("image-loading");
+      const formData = new FormData();
+      formData.append("query_image", fileInput.files[0]);
+      const response = await fetch("http://10.xx.xx.xx:5001/api/image_image_retrieval", {
+        method: "POST",
+        body: formData
+      });
+      stopLoadingAnimation("image-loading");
+      const data = await response.json();
+      const resultDiv = document.getElementById("results");
+      resultDiv.innerHTML = "<h3>Top 5 Retrieved Results</h3>";
+      const container = document.createElement("div");
+      container.className = "retrieved-images";
+      data.results.slice(0, 5).forEach((item, idx) => {
+        const wrapper = document.createElement("div");
+        const img = document.createElement("img");
+        img.src = item.path;
+        const label = document.createElement("p");
+        label.textContent = `Top-${idx + 1} | Dist: ${item.distance.toFixed(4)}`;
+        wrapper.appendChild(img);
+        wrapper.appendChild(label);
+        container.appendChild(wrapper);
+      });
+      resultDiv.appendChild(container);
+    }
 
-            data.results.slice(0, 5).forEach((item, idx) => {
-                const wrapper = document.createElement("div");
+    async function textSearch() {
+      const query = document.getElementById("textQuery").value.trim();
+      if (!query) {
+        alert("Please enter a prompt.");
+        return;
+      }
+      startLoadingAnimation("text-loading");
+      const response = await fetch("http://10.xx.xx.xx:5001/api/text_image_retrieval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query_text: query })
+      });
+      stopLoadingAnimation("text-loading");
+      const data = await response.json();
+      const resultDiv = document.getElementById("text-results");
+      resultDiv.innerHTML = "<h3>Top 5 Retrieved Results</h3>";
+      const container = document.createElement("div");
+      container.className = "retrieved-images";
+      data.results.slice(0, 5).forEach((item, idx) => {
+        const wrapper = document.createElement("div");
+        const img = document.createElement("img");
+        img.src = item.path;
+        const label = document.createElement("p");
+        label.textContent = `Top-${idx + 1} | Dist: ${item.distance.toFixed(4)}`;
+        wrapper.appendChild(img);
+        wrapper.appendChild(label);
+        container.appendChild(wrapper);
+      });
+      resultDiv.appendChild(container);
+    }
 
-                const img = document.createElement("img");
-                img.src = item.path;
-
-                const label = document.createElement("p");
-                label.textContent = `Top-${idx + 1} | Dist: ${item.distance.toFixed(4)}`;
-
-                wrapper.appendChild(img);
-                wrapper.appendChild(label);
-                container.appendChild(wrapper);
-            });
-
-            resultDiv.appendChild(container);
-        }
-    </script>
-
+    async function uploadVideoAndImage() {
+      const videoInput = document.getElementById("videoInput");
+      const queryImageInput = document.getElementById("queryImageInput");
+      if (videoInput.files.length === 0 || queryImageInput.files.length === 0) {
+        alert("Please upload both video and query image.");
+        return;
+      }
+      startLoadingAnimation("video-loading");
+      const formData = new FormData();
+      formData.append("video", videoInput.files[0]);
+      formData.append("query_image", queryImageInput.files[0]);
+      const response = await fetch("http://10.xx.xx.xx:5001/api/image_video_retrieval", {
+        method: "POST",
+        body: formData
+      });
+      stopLoadingAnimation("video-loading");
+      const data = await response.json();
+      const resultDiv = document.getElementById("video-results");
+      resultDiv.innerHTML = `
+        <h3>Best Matched Frame</h3>
+        <img src="${data.best_frame_path}" style="max-width: 300px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.2);">
+        <p>Timestamp in video: <strong>${data.timestamp.toFixed(2)} seconds</strong></p>
+      `;
+    }
+  </script>
 </body>
 </html>

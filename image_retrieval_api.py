@@ -2,11 +2,12 @@ from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 import torch
-from image_retrieval import run_dino_image_retrieval, get_image_files
+from image_retrieval import run_dino_image_retrieval, get_image_files, text_image_retrieval
 
 from flask_cors import CORS
 
-remote_server_ip = ""       # 10.xx.xx.xx
+# remote_server_ip = ""       # 10.xx.xx.xx
+remote_server_ip = "10.55.164.158"       # 10.xx.xx.xx
 
 app = Flask(__name__)
 CORS(app)
@@ -18,9 +19,32 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+@app.route('/api/text_image_retrieval', methods=['POST'])
+def text_image_retrieval_api():
+    data = request.get_json()
+    if not data or 'query_text' not in data:
+        return jsonify({'error': 'Missing query_text'}), 400
+
+    text_query = data['query_text']
+    print(f"[INFO] Received text query: {text_query}")
+
+    image_list = get_image_files(DATASET_FOLDER)
+    print(len(image_list))
+    results_raw, results = text_image_retrieval(image_list, text_query, device)
+
+    results = [
+        {
+            'path': f"http://{remote_server_ip}:5001/static_dataset/{os.path.basename(p)}",
+            'distance': float(dist),
+            'model': model_name
+        } for p, (dist, model_name) in results_raw
+    ]
+
+    return jsonify({'results': results})
+
 
 @app.route('/api/image_image_retrieval', methods=['POST'])    #  POST 类型的 API 接口，http://<服务器IP>:<端口>/api/image_retrieval -> 
-def image_image_retrieval():
+def image_image_retrieval_api():
     if 'query_image' not in request.files:
         return jsonify({'error': 'Missing file'}), 400
 
