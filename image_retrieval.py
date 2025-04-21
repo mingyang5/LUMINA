@@ -1,5 +1,6 @@
 import os
-os.environ['CUDA_VISIBLE_DEVICES']='3'
+# os.environ['CUDA_VISIBLE_DEVICES']='3'
+
 import argparse
 from PIL import Image
 
