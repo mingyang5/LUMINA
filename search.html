@@ -124,10 +124,10 @@
     }
 
     .retrieved-images {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      justify-content: center;
+      justify-items: center;
     }
 
     .retrieved-images img {
@@ -141,6 +141,15 @@
       color: #999;
       text-align: center;
       margin: 20px 0;
+    }
+
+    #uploadedImage {
+      display: block;
+      max-width: 300px;
+      max-height: 400px;
+      margin: 10px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(255,255,255,0.1);
     }
   </style>
 </head>
@@ -186,15 +195,33 @@
     <div id="results"></div>
   </div>
 
+  <div id="imageModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); justify-content:center; align-items:center;">
+    <img id="modalImage" style="max-width:90%; max-height:90%; border-radius:10px; box-shadow:0 0 12px white;">
+  </div>
+
   <script>
+    const API_BASE = "http://10.xx.xx.xx:5001";
+  
     function startLoading(id) {
       document.getElementById(id).style.display = "block";
     }
-
+  
     function stopLoading(id) {
       document.getElementById(id).style.display = "none";
     }
 
+    function showImageInModal(src) {
+      const modal = document.getElementById("imageModal");
+      const modalImage = document.getElementById("modalImage");
+      modalImage.src = src;
+      modal.style.display = "flex";
+    }
+
+    document.getElementById("imageModal").addEventListener("click", () => {
+      document.getElementById("imageModal").style.display = "none";
+    });
+
+  
     function previewImage() {
       const fileInput = document.getElementById("imageInput");
       const preview = document.getElementById("uploadedImage");
@@ -207,60 +234,81 @@
         reader.readAsDataURL(fileInput.files[0]);
       }
     }
-
+  
     async function uploadAndSearch() {
       const fileInput = document.getElementById("imageInput");
-      if (fileInput.files.length === 0) return alert("Please upload an image.");
-
+      if (fileInput.files.length === 0) {
+        alert("Please upload an image.");
+        return;
+      }
+  
       startLoading("image-loading");
-
+  
       const formData = new FormData();
       formData.append("query_image", fileInput.files[0]);
-
-      const response = await fetch("http://10.xx.xx.xx:5001/api/image_image_retrieval", {
+  
+      const response = await fetch(`${API_BASE}/api/image_image_retrieval`, {
         method: "POST",
         body: formData,
       });
-
+  
       stopLoading("image-loading");
+  
+      if (!response.ok) {
+        alert("Image retrieval failed.");
+        return;
+      }
+  
       const data = await response.json();
-
+  
       const resultContainer = document.getElementById("results");
       resultContainer.innerHTML = "<div class='retrieved-images'></div>";
       const gallery = resultContainer.querySelector(".retrieved-images");
-
-      data.results.slice(0, 5).forEach((item, idx) => {
+  
+      data.results.slice(0, 5).forEach(item => {
         const img = document.createElement("img");
-        img.src = item.path;
+        img.src = `${API_BASE}${item.path}`;
+        img.onclick = () => showImageInModal(img.src);
         gallery.appendChild(img);
       });
     }
-
+  
     async function textSearch() {
       const query = document.getElementById("textQuery").value.trim();
-      if (!query) return alert("Please enter a query.");
-
+      if (!query) {
+        alert("Please enter a query.");
+        return;
+      }
+  
       startLoading("text-loading");
-
-      const response = await fetch("http://10.xx.xx.xx:5001/api/text_image_retrieval", {
+  
+      const response = await fetch(`${API_BASE}/api/text_image_retrieval`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query_text: query }),
       });
-
+  
       stopLoading("text-loading");
+  
+      if (!response.ok) {
+        alert("Text-image retrieval failed.");
+        return;
+      }
+  
       const data = await response.json();
-
+  
       const resultContainer = document.getElementById("text-results");
       resultContainer.innerHTML = "<div class='retrieved-images'></div>";
       const gallery = resultContainer.querySelector(".retrieved-images");
-
-      data.results.slice(0, 5).forEach((item, idx) => {
+  
+      data.results.slice(0, 5).forEach(item => {
         const img = document.createElement("img");
-        img.src = item.path;
+        img.src = `${API_BASE}${item.path}`;
+        img.onclick = () => showImageInModal(img.src);
         gallery.appendChild(img);
       });
     }
   </script>
+  
 </body>
 </html>

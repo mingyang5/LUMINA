@@ -44,13 +44,13 @@ def run_dino_image_retrieval(image_folder, query_image, device, topk=5):
 def text_image_retrieval(image_folder, text_query, device):
     results = {}
     print("\n[CLIP Retrieval]")
-    results["clip"] = run_clip_retrieval(image_folder, text_query, device)
+    results["clip"] = run_clip_retrieval(image_folder, text_query, device, topk=8)
 
     # print("\n[Chinese-CLIP Retrieval]")
     # results["chinese_clip"] = run_chinese_clip_retrieval(image_folder, text_query, device)
 
     print("\n[CLIPSeg Retrieval]")
-    results["clipseg"] = run_clipseg_retrieval(image_folder, text_query, device)
+    results["clipseg"] = run_clipseg_retrieval(image_folder, text_query, device, topk=8)
     
     all_results = []
     for model_name, (paths, dists) in results.items():

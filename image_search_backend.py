@@ -1,22 +1,40 @@
-from flask import Flask, request, jsonify, send_from_directory
+# Modified version of the given code to align with the structure from the first code block
+
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from werkzeug.utils import secure_filename
 import os
+import random
 import torch
 from image_retrieval import run_dino_image_retrieval, get_image_files, text_image_retrieval
 
 from flask_cors import CORS
 
-remote_server_ip = ""       # 10.xx.xx.xx
-
 app = Flask(__name__)
 CORS(app)
 
-UPLOAD_FOLDER = "/mnt/data/mingyang/courses/csce670/CSCE-670-Agentic-Retrieval/uploads"
-DATASET_FOLDER = "/mnt/data/mingyang/courses/csce670/CSCE-670-Agentic-Retrieval/datasets/stable_diffusion"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# Same dataset folders as original structure
+DATASET_FOLDERS = [
+    "./datasets/DiffusionDB",
+    "./datasets/generated_images",
+    "./datasets/GAIC",
+    "./datasets/open_vid"
+]
+
+UPLOAD_FOLDER = "./uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+def get_all_images():
+    all_images = []
+    for folder in DATASET_FOLDERS:
+        if os.path.isdir(folder):
+            all_images.extend([
+                os.path.join(folder, f)
+                for f in os.listdir(folder)
+                if f.lower().endswith((".png", ".jpg", ".jpeg", "webp"))
+            ])
+    return all_images
 
 @app.route('/api/text_image_retrieval', methods=['POST'])
 def text_image_retrieval_api():
@@ -27,22 +45,27 @@ def text_image_retrieval_api():
     text_query = data['query_text']
     print(f"[INFO] Received text query: {text_query}")
 
-    image_list = get_image_files(DATASET_FOLDER)
-    print(len(image_list))
+    image_list = get_all_images()
+    print(f"[INFO] Found {len(image_list)} images in dataset")
+
+    if len(image_list) > 100:
+        image_list = random.sample(image_list, 100)
+
     results_raw, results = text_image_retrieval(image_list, text_query, device)
 
     results = [
         {
-            'path': f"http://{remote_server_ip}:5001/static_dataset/{os.path.basename(p)}",
+            'path': f"/image_proxy?path={p}",
             'distance': float(dist),
             'model': model_name
         } for p, (dist, model_name) in results_raw
     ]
 
+    print(f"[INFO] Top results: {results[:3]}")
     return jsonify({'results': results})
 
 
-@app.route('/api/image_image_retrieval', methods=['POST'])    #  POST 类型的 API 接口，http://<服务器IP>:<端口>/api/image_retrieval -> 
+@app.route('/api/image_image_retrieval', methods=['POST'])
 def image_image_retrieval_api():
     if 'query_image' not in request.files:
         return jsonify({'error': 'Missing file'}), 400
@@ -54,31 +77,34 @@ def image_image_retrieval_api():
 
     print(f"[INFO] Received query image: {query_image_path}")
 
-    image_list = get_image_files(DATASET_FOLDER)
-    paths, dists = run_dino_image_retrieval(image_list, query_image_path, device)
+    image_list = get_all_images()
+    print(f"[INFO] Total images in dataset: {len(image_list)}")
 
-    print(f"[INFO] Retrieval results: {[os.path.basename(p) for p in paths]}")
-    
+    if len(image_list) > 100:
+        image_list = random.sample(image_list, 100)
+
+    paths, dists = run_dino_image_retrieval(image_list, query_image_path, device, topk=8)
+
     results = [
         {
-            'path': f"http://{remote_server_ip}:5001/static_dataset/{os.path.basename(p)}",
+            'path': f"/image_proxy?path={p}",
             'distance': float(d)
         } for p, d in zip(paths, dists)
     ]
-    # print(results)
-    
+
+    print(f"[INFO] Top retrieval results: {[os.path.basename(r['path']) for r in results[:5]]}")
+
     return jsonify({'results': results})
 
 
-@app.route('/static_dataset/<path:filename>')               # 访问静态图像的接口 -> 取出文件
-def serve_static_dataset(filename):
-    full_path = os.path.join(DATASET_FOLDER, filename)
-    if not os.path.exists(full_path):
-        print(f"[ERROR] File not found: {full_path}")
-    else:
-        print(f"[INFO] Serving file: {full_path}")
-    return send_from_directory(DATASET_FOLDER, filename)
+@app.route('/image_proxy')
+def image_proxy():
+    path = request.args.get("path")
+    if path and os.path.isfile(path):
+        return send_file(path, mimetype='image/png')
+    return "Not Found", 404
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
+
