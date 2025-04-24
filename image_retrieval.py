@@ -14,40 +14,40 @@ from transformers import (
 from agent_models.utils import *
 from vlm_verifier import *
 
-def run_clip_retrieval(image_folder, query, device):
+def run_clip_retrieval(image_folder, query, device, topk=5):
     model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device).eval()
     processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
     index, _ = image_folder_embed(image_folder, model, device, is_clip=True, processor=processor)
     query_vec = clip_text_query(query, model, device, processor)
-    return search_and_visualize(index, query_vec, image_folder, topk=5, visualize=False)
+    return search_and_visualize(index, query_vec, image_folder, topk=topk, visualize=False)
 
-def run_chinese_clip_retrieval(image_folder, query, device):
+def run_chinese_clip_retrieval(image_folder, query, device, topk=5):
     model = ChineseCLIPModel.from_pretrained("OFA-Sys/chinese-clip-vit-base-patch16").to(device).eval()
     processor = ChineseCLIPProcessor.from_pretrained("OFA-Sys/chinese-clip-vit-base-patch16")
     index, _ = image_folder_embed(image_folder, model, device, is_clip=True, processor=processor)
     query_vec = clip_text_query(query, model, device, processor)
-    return search_and_visualize(index, query_vec, image_folder, topk=5, visualize=False)
+    return search_and_visualize(index, query_vec, image_folder, topk=topk, visualize=False)
 
-def run_clipseg_retrieval(image_folder, query, device):
+def run_clipseg_retrieval(image_folder, query, device, topk=5):
     model = CLIPSegModel.from_pretrained("CIDAS/clipseg-rd64-refined").to(device).eval()
     processor = AutoProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
     index, _ = image_folder_embed(image_folder, model, device, is_clip=True, processor=processor)
     query_vec = clip_text_query(query, model, device, processor)
-    return search_and_visualize(index, query_vec, image_folder, topk=5, visualize=False)
+    return search_and_visualize(index, query_vec, image_folder, topk=topk, visualize=False)
 
-def run_dino_image_retrieval(image_folder, query_image, device):
+def run_dino_image_retrieval(image_folder, query_image, device, topk=5):
     model = torch.hub.load("facebookresearch/dinov2", "dinov2_vits14").to(device).eval()
     index, _ = image_folder_embed(image_folder, model=model, device=device)
     query_vec = dino_image_query(query_image, model=model, device=device)
-    return search_and_visualize(index, query_vec, image_folder, topk=5, visualize=False)
+    return search_and_visualize(index, query_vec, image_folder, topk=topk, visualize=False)
 
 def text_image_retrieval(image_folder, text_query, device):
     results = {}
     print("\n[CLIP Retrieval]")
     results["clip"] = run_clip_retrieval(image_folder, text_query, device)
 
-    print("\n[Chinese-CLIP Retrieval]")
-    results["chinese_clip"] = run_chinese_clip_retrieval(image_folder, text_query, device)
+    # print("\n[Chinese-CLIP Retrieval]")
+    # results["chinese_clip"] = run_chinese_clip_retrieval(image_folder, text_query, device)
 
     print("\n[CLIPSeg Retrieval]")
     results["clipseg"] = run_clipseg_retrieval(image_folder, text_query, device)

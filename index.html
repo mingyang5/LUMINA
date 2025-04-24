@@ -1,328 +1,764 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Information Retrieval</title>
+  <meta charset="UTF-8" />
+  <title>AI Generated Gallery</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f8f6f2;
-      color: #5c4033;
+      background-color: #1a1a1d;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
     }
-
-    .top-bar {
-      background-color: white;
-      padding: 20px 40px;
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      padding: 20px 40px;
+      background-color: #111;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      flex-wrap: wrap;
     }
-
-    .top-bar .title {
-      font-size: 22px;
-      font-weight: bold;
-      color: #5c4033;
+    .title-group {
+      display: flex;
+      flex-direction: column;
     }
-
-    .top-bar .subtitle {
-      font-size: 14px;
-      color: #5c4033;
-      margin-top: 2px;
-    }
-
-    .top-bar .auth-links a {
-      margin-left: 20px;
-      text-decoration: none;
-      color: #5c4033;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .main-container {
-      max-width: 700px;
-      background-color: white;
-      margin: 30px auto;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
     .main-title {
-      text-align: center;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
     }
-
-    .divider {
-      width: 80px;
-      height: 4px;
-      background-color: #8b5e3c;
-      margin: 10px auto 30px auto;
+    .subtitle {
+      font-size: 14px;
+      margin-top: 4px;
+      color: #ccc;
+    }
+    .right-buttons {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      font-size: 14px;
+      color: #ccc;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: #facc15;
+    }
+    .refresh-button {
+      background-color: #facc15;
+      border: none;
+      color: black;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .top-panel {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 40px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .sample-box {
+      background-color: #1a1a1a;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      max-width: 360px;
+      flex-shrink: 0;
+    }
+    .sample-box img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .text-box input {
+      width: 100%;
+      max-width: 500px;
+      min-width: 250px;
+      box-sizing: border-box;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 10px;
+    }
+    .text-box h3 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+    .text-box input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 10px;
+    }
+    .text-box button {
+      margin-top: 14px;
+      padding: 10px 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: bold;
+      background-color: #facc15;
+      color: black;
+      cursor: pointer;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 30px;
+      padding: 50px;
+      max-width: 1600px;
+      margin: auto;
+    }
+    .card {
+      position: relative;
+      background-color: #1a1a1a;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: scale(1.01);
+    }
+    .card img,
+    .card video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
+    .card-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .explore-button {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .explore-button:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #facc15;
+      color: #facc15;
+    }
+    .stars {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+      margin-bottom: 24px;
+    }
+    .star {
+      font-size: 32px;
+      cursor: pointer;
+      color: #888;
+      transition: color 0.2s;
+    }
+    .star.hovered,
+    .star.selected {
+      color: #facc15;
+    }
+    .loading-text {
+      font-size: 16px;
+      text-align: center;
+      color: #999;
+      margin: 20px 0;
+    }
+    .carousel-wrapper {
+      display: flex;
+      align-items: center;
+      position: relative;
+      margin-top: 16px;
+    }
+    .carousel-button {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      width: 40px;
+      height: 100%;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .carousel-button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .tab-switcher {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 0 auto;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      border-bottom: 2px solid #2c2c2c;
+      width: fit-content;
+      padding-bottom: 8px;
+    }
+    .tab {
+      cursor: pointer;
+      padding: 10px 0;
+      color: #aaa;
+      position: relative;
+    }
+    .tab.active {
+      color: #facc15;
+    }
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: #facc15;
       border-radius: 2px;
     }
 
-    .section-label {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .custom-button {
-      background-color: #8b5e3c;
-      color: white;
-      padding: 12px 0;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-      display: block;
-      border: none;
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-
-    .file-upload-wrapper {
-      position: relative;
-      overflow: hidden;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .file-upload-wrapper input[type="file"] {
-      font-size: 100px;
-      position: absolute;
-      left: 0;
+    #exploreModal {
+      position: fixed;
       top: 0;
-      opacity: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: flex-start;
+      z-index: 99999;
+      padding: 60px 40px;
+    }
+    #exploreContent {
+      max-width: 1200px;
+      width: 100%;
+      background-color: #111;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(255,255,255,0.1);
+    }
+
+    #exploreMainImageWrapper {
+      text-align: center;
+    }
+
+    #exploreMainImage {
+      max-width: 300px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(255,255,255,0.25);
+    }
+
+    #imageCaption {
+      margin: 12px auto 24px auto;
+      text-align: center;
+      font-size: 16px;
+      color: #ccc;
+    }
+
+    #relatedGallery {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      gap: 20px;
+      padding: 10px;
+      flex: 1;
+    }
+
+    #relatedGallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    #relatedGallery img {
+      width: 180px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      transition: transform 0.3s;
       cursor: pointer;
     }
 
-    #uploadedImage {
-      margin: 16px auto 30px auto;
-      max-width: 300px;
-      display: block;
-      border-radius: 8px;
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    #relatedGallery img:hover {
+      transform: scale(1.03);
     }
 
-    .retrieved-images {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
+    #zoomModal {
+      display: none;
+      position: fixed;
+      z-index: 100000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.88);
+      justify-content: center;
+      align-items: center;
     }
 
-    .retrieved-images img {
-      width: 130px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+    #zoomModal img {
+      max-width: 92%;
+      max-height: 92%;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(255,255,255,0.25);
     }
-
-    .retrieved-images p {
-      font-size: 12px;
-      color: #444;
-      margin-top: 5px;
-    }
-
-    .loading-text {
-        font-size: 14px;
-        margin-bottom: 10px;
-        display: none;
-    }
-    .logo-img {
-        height: 40px;
-        margin-right: 15px;
-    }
-
   </style>
 </head>
+
 <body>
-  <div class="top-bar">
-    <div style="display: flex; align-items: center;">
-        <img src="assets/project_logo.png" alt="Logo" class="logo-img">
-        <div>
-          <div class="title">Information Genie</div>
-          <div class="subtitle">Your information. Retrieved smartly.</div>
+  <div class="header">
+    <div class="title-group">
+      <div class="main-title">Image Gallery Retrieval</div>
+      <div class="subtitle">Discover, Rate, and Retrieve AI-Generated / Natural Visual Assets</div>
+    </div>
+    <div class="right-buttons">
+      <button class="refresh-button" onclick="loadImages()">Refresh</button>
+      <a href="#" class="nav-link">Business</a>
+      <a href="#" class="nav-link">Pricing</a>
+      <a href="#" class="nav-link">Sign in</a>
+    </div>
+  </div>
+
+  <div class="top-panel">
+    <div class="sample-box">
+      <img id="sampleImage" src="" alt="Sample Asset">
+      <!-- <div style="text-align: center; font-size: 14px; color: #ccc;">Random Sample</div> -->
+    </div>
+    <div class="text-box">
+      <h3>Text-to-Image Retrieval</h3>
+      <input type="text" id="textQueryInput" placeholder="Describe the image you're looking for...">
+      <button onclick="searchByText()">Search by Text</button>
+    </div>
+  </div>
+
+  <div class="tab-switcher">
+    <div class="tab active" onclick="activateTab('art')">Art Gallery</div>
+    <div class="tab" onclick="activateTab('video')">Video Gallery</div>    
+  </div>
+  
+  <div class="grid-container" id="gallery"></div>
+
+  <div id="exploreModal" onclick="hideExploreModal(event)">
+    <div id="exploreContent">
+      <div id="exploreMainImageWrapper">
+        <img id="exploreMainImage" />
+        <div id="imageCaption">Selected Image</div>
+        <div class="stars" id="exploreStarRating"></div>
+      </div>
+      <div style="margin-top: 32px;">
+        <div style="color: #bbb; font-size: 20px; font-weight: 500; margin-bottom: 12px; text-align: left;">
+          Recommend your exploration
         </div>
-    </div>
-    
-    <div class="auth-links">
-      <a href="#">Login</a>
-      <a href="#">Sign Up</a>
+        <div id="relatedGallery"></div>
+      </div>
     </div>
   </div>
 
-  <div class="main-container">
-    <div class="main-title">Text-to-Image Retrieval</div>
-    <div class="divider"></div>
-    <div class="section-label">Enter your prompt</div>
-    <input type="text" id="textQuery" placeholder="e.g., a man riding a bicycle in the city...">
-    <button class="custom-button" onclick="textSearch()">Search by Text</button>
-    <div id="text-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
-    <div id="text-results"></div>
+  <div id="zoomModal" onclick="hideZoomModal(event)">
+    <img id="zoomedImage" />
   </div>
 
-  <div class="main-container">
-    <div class="main-title">Image-to-Image Retrieval</div>
-    <div class="divider"></div>
-    <div class="section-label">Upload your image</div>
-    <div class="file-upload-wrapper">
-      <button class="custom-button">Choose Image</button>
-      <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
-    </div>
-    <img id="uploadedImage" src="" alt="" style="display:none;">
-    <div class="section-label">Then click to retrieve similar images</div>
-    <button class="custom-button" onclick="uploadAndSearch()">Start Retrieval</button>
-    <div id="image-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
-    <div id="results"></div>
-  </div>
-
-  <div class="main-container">
-    <div class="main-title">Image-to-Video Retrieval</div>
-    <div class="divider"></div>
-    <div class="section-label">Upload your video and query image</div>
-    <div class="file-upload-wrapper">
-      <button class="custom-button">Choose Video</button>
-      <input type="file" id="videoInput" accept="video/*">
-    </div>
-    <div class="file-upload-wrapper">
-      <button class="custom-button">Choose Query Image</button>
-      <input type="file" id="queryImageInput" accept="image/*">
-    </div>
-    <button class="custom-button" onclick="uploadVideoAndImage()">Search in Video</button>
-    <div id="video-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
-    <div id="video-results"></div>
-  </div>
-
+  <!-- <div style="max-width: 1600px; margin: auto; padding: 30px 50px 0 50px;">
+    <h2 style="color: #facc15; font-size: 20px;">Featured Videos</h2>
+    <div id="videoGallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px;"></div>
+  </div> -->
+  
   <script>
-    function startLoadingAnimation(id) {
-      const el = document.getElementById(id);
-      el.style.display = "block";
-      let dots = 0;
-      el.innerText = "processing";
-      el._interval = setInterval(() => {
-        dots = (dots + 1) % 4;
-        el.innerText = "processing" + ".".repeat(dots);
-      }, 500);
-    }
-
-    function stopLoadingAnimation(id) {
-      const el = document.getElementById(id);
-      clearInterval(el._interval);
-      el.style.display = "none";
-    }
-
-    function previewImage() {
-      const fileInput = document.getElementById("imageInput");
-      const uploadedImage = document.getElementById("uploadedImage");
-      if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          uploadedImage.src = e.target.result;
-          uploadedImage.style.display = 'block';
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+    const API_BASE = "http://10.55.164.158:5000";
+    let selectedExploreRating = 0;
+  
+    function hideExploreModal(e) {
+      if (e.target.id === "exploreModal") {
+        document.getElementById("exploreModal").style.display = "none";
       }
     }
-
-    async function uploadAndSearch() {
-      const fileInput = document.getElementById("imageInput");
-      if (fileInput.files.length === 0) {
-        alert("Please select an image");
-        return;
-      }
-      startLoadingAnimation("image-loading");
-      const formData = new FormData();
-      formData.append("query_image", fileInput.files[0]);
-      const response = await fetch("http://10.xx.xx.xx:5001/api/image_image_retrieval", {
-        method: "POST",
-        body: formData
+  
+    function highlightExploreStars(rating) {
+      const stars = document.querySelectorAll(".explore-star");
+      stars.forEach(star => {
+        const value = parseInt(star.dataset.value);
+        if (value <= rating) {
+          star.classList.add("hovered", "selected");
+        } else {
+          star.classList.remove("hovered", "selected");
+        }
       });
-      stopLoadingAnimation("image-loading");
+    }
+  
+    function renderExploreStars(imagePath) {
+      const starContainer = document.getElementById("exploreStarRating");
+      starContainer.innerHTML = "";
+      selectedExploreRating = 0;
+      for (let i = 1; i <= 5; i++) {
+        const star = document.createElement("span");
+        star.className = "star explore-star";
+        star.innerHTML = "★";
+        star.dataset.value = i;
+  
+        star.addEventListener("mouseover", () => highlightExploreStars(i));
+        star.addEventListener("mouseout", () => highlightExploreStars(selectedExploreRating));
+        star.addEventListener("click", () => {
+          selectedExploreRating = i;
+          highlightExploreStars(i);
+          console.log(`Explore rated ${i} stars for: ${imagePath}`);
+          // 可以在这里 fetch('/api/rate', { method: 'POST', body: JSON.stringify(...) })
+        });
+  
+        starContainer.appendChild(star);
+      }
+    }
+
+    function showZoomModal(src) {
+      const modal = document.getElementById("zoomModal");
+      const zoomImg = document.getElementById("zoomedImage");
+      zoomImg.src = src;
+      modal.style.display = "flex";
+    }
+
+    function hideZoomModal(e) {
+      if (e.target.id === "zoomModal") {
+        document.getElementById("zoomModal").style.display = "none";
+      }
+    }
+
+    function activateTab(tabName) {
+      const tabs = document.querySelectorAll(".tab");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      if (tabName === "art") {
+        tabs[0].classList.add("active");
+        showArtGallery();
+      } else if (tabName === "video") {
+        tabs[1].classList.add("active");
+        showVideoGallery();
+      }
+    }
+
+    async function loadImages() {
+      const response = await fetch(`${API_BASE}/api/sample_images`);
       const data = await response.json();
-      const resultDiv = document.getElementById("results");
-      resultDiv.innerHTML = "<h3>Top 5 Retrieved Results</h3>";
-      const container = document.createElement("div");
-      container.className = "retrieved-images";
-      data.results.slice(0, 5).forEach((item, idx) => {
-        const wrapper = document.createElement("div");
+      const container = document.getElementById("gallery");
+      container.innerHTML = "";
+      data.images.forEach((imgPath, idx) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
         const img = document.createElement("img");
-        img.src = item.path;
-        const label = document.createElement("p");
-        label.textContent = `Top-${idx + 1} | Dist: ${item.distance.toFixed(4)}`;
-        wrapper.appendChild(img);
-        wrapper.appendChild(label);
-        container.appendChild(wrapper);
+        img.src = `${API_BASE}/image_proxy?path=${encodeURIComponent(imgPath)}`;
+
+        const label = document.createElement("div");
+        label.className = "card-title";
+        label.textContent = `Image #${idx + 1}`;
+
+        const exploreBtn = document.createElement("button");
+        exploreBtn.className = "explore-button";
+        exploreBtn.textContent = "Explore";
+        exploreBtn.onclick = () => exploreImage(img.src, imgPath);
+
+        card.appendChild(img);
+        card.appendChild(label);
+        card.appendChild(exploreBtn);
+        container.appendChild(card);
       });
-      resultDiv.appendChild(container);
+      
+      if (data.images.length > 0) {
+        const sample = data.images[Math.floor(Math.random() * data.images.length)];
+        document.getElementById("sampleImage").src = `${API_BASE}/image_proxy?path=${encodeURIComponent(sample)}`;
+      }
     }
 
-    async function textSearch() {
-      const query = document.getElementById("textQuery").value.trim();
-      if (!query) {
-        alert("Please enter a prompt.");
-        return;
-      }
-      startLoadingAnimation("text-loading");
-      const response = await fetch("http://10.xx.xx.xx:5001/api/text_image_retrieval", {
+    async function searchByText() {
+      const query = document.getElementById("textQueryInput").value.trim();
+      if (!query) return alert("Please enter a description.");
+
+      const response = await fetch(`${API_BASE}/api/text_image_retrieval`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query_text: query })
+        body: JSON.stringify({ query_text: query }),
       });
-      stopLoadingAnimation("text-loading");
-      const data = await response.json();
-      const resultDiv = document.getElementById("text-results");
-      resultDiv.innerHTML = "<h3>Top 5 Retrieved Results</h3>";
-      const container = document.createElement("div");
-      container.className = "retrieved-images";
-      data.results.slice(0, 5).forEach((item, idx) => {
-        const wrapper = document.createElement("div");
-        const img = document.createElement("img");
-        img.src = item.path;
-        const label = document.createElement("p");
-        label.textContent = `Top-${idx + 1} | Dist: ${item.distance.toFixed(4)}`;
-        wrapper.appendChild(img);
-        wrapper.appendChild(label);
-        container.appendChild(wrapper);
-      });
-      resultDiv.appendChild(container);
-    }
 
-    async function uploadVideoAndImage() {
-      const videoInput = document.getElementById("videoInput");
-      const queryImageInput = document.getElementById("queryImageInput");
-      if (videoInput.files.length === 0 || queryImageInput.files.length === 0) {
-        alert("Please upload both video and query image.");
+      if (!response.ok) {
+        alert("Failed to retrieve search results.");
         return;
       }
-      startLoadingAnimation("video-loading");
-      const formData = new FormData();
-      formData.append("video", videoInput.files[0]);
-      formData.append("query_image", queryImageInput.files[0]);
-      const response = await fetch("http://10.xx.xx.xx:5001/api/image_video_retrieval", {
-        method: "POST",
-        body: formData
-      });
-      stopLoadingAnimation("video-loading");
+
       const data = await response.json();
-      const resultDiv = document.getElementById("video-results");
-      resultDiv.innerHTML = `
-        <h3>Best Matched Frame</h3>
-        <img src="${data.best_frame_path}" style="max-width: 300px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.2);">
-        <p>Timestamp in video: <strong>${data.timestamp.toFixed(2)} seconds</strong></p>
-      `;
+      const results = data.results || [];
+
+      if (results.length === 0) {
+        alert("No results found.");
+        return;
+      }
+
+      // 准备 Explore 模态框
+      const gallery = document.getElementById("relatedGallery");
+      const caption = document.getElementById("imageCaption");
+      const exploreModal = document.getElementById("exploreModal");
+      const mainImage = document.getElementById("exploreMainImage");
+
+      // 清空内容并显示
+      gallery.innerHTML = "";
+      exploreModal.style.display = "flex";
+      caption.textContent = `Results for: "${query}"`;
+      mainImage.src = `${API_BASE}${results[0].path}`;  // 主图为第一个结果图
+      renderExploreStars(decodeURIComponent(results[0].path.split("=")[1]));
+
+      results.forEach((result, idx) => {
+        const imagePath = result.path.split("=")[1];
+        const displaySrc = `${API_BASE}/image_proxy?path=${encodeURIComponent(imagePath)}`;
+
+        const img = document.createElement("img");
+        img.src = displaySrc;
+        img.onclick = () => showZoomModal(displaySrc);
+        img.onerror = () => {
+          img.src = "https://via.placeholder.com/180x180?text=Missing+Image";
+        };
+
+        gallery.appendChild(img);
+      });
     }
+
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+
+    async function showVideoGallery() {
+      const response = await fetch(`${API_BASE}/api/sample_videos`);
+      const data = await response.json();
+      const container = document.getElementById("gallery");
+      container.innerHTML = "";
+
+      data.videos.forEach((videoPath, idx) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const video = document.createElement("video");
+        video.src = `${API_BASE}/image_proxy?path=${encodeURIComponent(videoPath)}`;
+        video.controls = true;
+        video.muted = true;
+        video.style.width = "100%";
+        video.style.borderRadius = "8px";
+
+        const label = document.createElement("div");
+        label.className = "card-title";
+        label.textContent = `Video #${idx + 1}`;
+
+        card.appendChild(video);
+        card.appendChild(label);
+        container.appendChild(card);
+      });
+    }
+
+  
+    async function exploreImage(displaySrc, realPath) {
+      document.getElementById("exploreModal").style.display = "flex";
+      document.getElementById("exploreMainImage").src = displaySrc;
+      document.getElementById("imageCaption").textContent = "Explore similar assets";
+      renderExploreStars(realPath);
+  
+      const gallery = document.getElementById("relatedGallery");
+      gallery.innerHTML = '<div class="loading-text">Loading similar assets...</div>';
+  
+      const response = await fetch(`${API_BASE}/api/related_images?path=${encodeURIComponent(realPath)}`);
+      const data = await response.json();
+  
+      gallery.innerHTML = "";
+      data.related.forEach(p => {
+        const img = document.createElement("img");
+        const displaySrc = `${API_BASE}/image_proxy?path=${encodeURIComponent(p)}`;
+        img.src = displaySrc;
+        img.onclick = () => showZoomModal(displaySrc);
+        img.onerror = () => {
+          img.src = "https://via.placeholder.com/180x180?text=Missing+Image";
+        };
+        gallery.appendChild(img);
+      });
+
+    }
+    
+    async function loadGallery() {
+      const [imgRes, vidRes] = await Promise.all([
+        fetch(`${API_BASE}/api/sample_images`),
+        fetch(`${API_BASE}/api/sample_videos`)
+      ]);
+
+      const imgData = await imgRes.json();
+      const vidData = await vidRes.json();
+
+      const imageCards = imgData.images.map((imgPath, idx) => ({
+        type: 'image',
+        src: `${API_BASE}/image_proxy?path=${encodeURIComponent(imgPath)}`,
+        rawPath: imgPath,
+        label: `Image #${idx + 1}`
+      }));
+
+      const videoCards = vidData.videos.map((videoPath, idx) => ({
+        type: 'video',
+        src: `${API_BASE}/image_proxy?path=${encodeURIComponent(videoPath)}`,
+        rawPath: videoPath,
+        label: `Video #${idx + 1}`
+      }));
+
+      const allCards = [...imageCards, ...videoCards];
+      shuffleArray(allCards);
+
+      const container = document.getElementById("gallery");
+      container.innerHTML = "";
+
+      allCards.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        if (item.type === "image") {
+          const img = document.createElement("img");
+          img.src = item.src;
+
+          const label = document.createElement("div");
+          label.className = "card-title";
+          label.textContent = item.label;
+
+          const exploreBtn = document.createElement("button");
+          exploreBtn.className = "explore-button";
+          exploreBtn.textContent = "Explore";
+          exploreBtn.onclick = () => exploreImage(img.src, item.rawPath);
+
+          card.appendChild(img);
+          card.appendChild(label);
+          card.appendChild(exploreBtn);
+        } else if (item.type === "video") {
+          const video = document.createElement("video");
+          video.src = item.src;
+          video.controls = true;
+          video.muted = true;
+          video.style.width = "100%";
+          video.style.borderRadius = "8px";
+
+          const label = document.createElement("div");
+          label.className = "card-title";
+          label.textContent = item.label;
+
+          card.appendChild(video);
+          card.appendChild(label);
+        }
+
+        container.appendChild(card);
+      });
+
+      // set sample image in top panel
+      if (imgData.images.length > 0) {
+        const sample = imgData.images[Math.floor(Math.random() * imgData.images.length)];
+        document.getElementById("sampleImage").src = `${API_BASE}/image_proxy?path=${encodeURIComponent(sample)}`;
+      }
+    }
+
+    async function showArtGallery() {
+      const [imgRes, vidRes] = await Promise.all([
+        fetch(`${API_BASE}/api/sample_images`),
+        fetch(`${API_BASE}/api/sample_videos`)
+      ]);
+
+      const imgData = await imgRes.json();
+      const vidData = await vidRes.json();
+
+      const imageCards = imgData.images.map((imgPath, idx) => ({
+        type: 'image',
+        src: `${API_BASE}/image_proxy?path=${encodeURIComponent(imgPath)}`,
+        rawPath: imgPath,
+        label: `Image #${idx + 1}`
+      }));
+
+      const videoCards = vidData.videos.map((videoPath, idx) => ({
+        type: 'video',
+        src: `${API_BASE}/image_proxy?path=${encodeURIComponent(videoPath)}`,
+        rawPath: videoPath,
+        label: `Video #${idx + 1}`
+      }));
+
+      const allCards = [...imageCards, ...videoCards];
+      shuffleArray(allCards); // 随机混合
+
+      const container = document.getElementById("gallery");
+      container.innerHTML = "";
+
+      allCards.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        if (item.type === "image") {
+          const img = document.createElement("img");
+          img.src = item.src;
+
+          const label = document.createElement("div");
+          label.className = "card-title";
+          label.textContent = item.label;
+
+          const exploreBtn = document.createElement("button");
+          exploreBtn.className = "explore-button";
+          exploreBtn.textContent = "Explore";
+          exploreBtn.onclick = () => exploreImage(img.src, item.rawPath);
+
+          card.appendChild(img);
+          card.appendChild(label);
+          card.appendChild(exploreBtn);
+        } else {
+          const video = document.createElement("video");
+          video.src = item.src;
+          video.controls = true;
+          video.muted = true;
+          video.style.width = "100%";
+          video.style.borderRadius = "8px";
+
+          const label = document.createElement("div");
+          label.className = "card-title";
+          label.textContent = item.label;
+
+          card.appendChild(video);
+          card.appendChild(label);
+        }
+
+        container.appendChild(card);
+      });
+
+      if (imgData.images.length > 0) {
+        const sample = imgData.images[Math.floor(Math.random() * imgData.images.length)];
+        document.getElementById("sampleImage").src = `${API_BASE}/image_proxy?path=${encodeURIComponent(sample)}`;
+      }
+    }
+
+  loadGallery();
+  activateTab('art');
   </script>
 </body>
 </html>

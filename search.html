@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Search | Gallery Retrieval</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1a1a1d;
+      color: white;
+    }
+
+    .top-bar {
+      background-color: #111;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar .main-title {
+      font-size: 26px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .top-bar .subtitle {
+      font-size: 13px;
+      color: #ccc;
+      margin-top: 4px;
+    }
+
+    .top-bar .nav-links a {
+      margin-left: 24px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .top-bar .nav-links a:hover {
+      color: #facc15;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 40px;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .divider {
+      width: 100px;
+      height: 4px;
+      background-color: #ffffff;
+      margin: 10px auto 30px auto;
+      border-radius: 2px;
+    }
+
+    .section-sub {
+      font-weight: bold;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-upload-wrapper input[type="file"] {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+      background-color: white;
+      color: black;
+    }
+
+    .custom-button {
+      background-color: #facc15;
+      color: black;
+      padding: 14px 0;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      border: none;
+      margin-bottom: 30px;
+    }
+
+    .retrieved-images {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .retrieved-images img {
+      width: 150px;
+      border-radius: 10px;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+    }
+
+    .loading-text {
+      font-size: 15px;
+      color: #999;
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-bar">
+    <div class="title-group">
+      <div class="main-title">Image Gallery Retrieval</div>
+      <div class="subtitle">Discover, Rate, and Retrieve AI-Generated / Natural Visual Assets</div>
+    </div>
+
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="#">Business</a>
+      <a href="#">Pricing</a>
+      <a href="#">Sign In</a>
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="section-title">Text-to-Image Retrieval</div>
+    <div class="divider"></div>
+    <div class="section-sub">Enter your prompt</div>
+    <input type="text" id="textQuery" placeholder="e.g., an astronaut riding a horse..." style="max-width: 675px;">
+    <button class="custom-button" onclick="textSearch()">Search by Text</button>
+    <div id="text-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
+    <div id="text-results"></div>
+  </div>
+
+  <div class="container">
+    <div class="section-title">Image-to-Image Retrieval</div>
+    <div class="divider"></div>
+    <div class="section-sub">Upload your image</div>
+    <div class="file-upload-wrapper">
+      <button class="custom-button">Choose Image</button>
+      <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+    </div>
+    <img id="uploadedImage" src="" alt="" style="display:none;">
+    <div class="section-sub">Then click to retrieve similar images</div>
+    <button class="custom-button" onclick="uploadAndSearch()">Start Retrieval</button>
+    <div id="image-loading" style="display:none; font-size: 14px; margin-bottom: 10px;"></div>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    function startLoading(id) {
+      document.getElementById(id).style.display = "block";
+    }
+
+    function stopLoading(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function previewImage() {
+      const fileInput = document.getElementById("imageInput");
+      const preview = document.getElementById("uploadedImage");
+      if (fileInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      }
+    }
+
+    async function uploadAndSearch() {
+      const fileInput = document.getElementById("imageInput");
+      if (fileInput.files.length === 0) return alert("Please upload an image.");
+
+      startLoading("image-loading");
+
+      const formData = new FormData();
+      formData.append("query_image", fileInput.files[0]);
+
+      const response = await fetch("http://10.xx.xx.xx:5001/api/image_image_retrieval", {
+        method: "POST",
+        body: formData,
+      });
+
+      stopLoading("image-loading");
+      const data = await response.json();
+
+      const resultContainer = document.getElementById("results");
+      resultContainer.innerHTML = "<div class='retrieved-images'></div>";
+      const gallery = resultContainer.querySelector(".retrieved-images");
+
+      data.results.slice(0, 5).forEach((item, idx) => {
+        const img = document.createElement("img");
+        img.src = item.path;
+        gallery.appendChild(img);
+      });
+    }
+
+    async function textSearch() {
+      const query = document.getElementById("textQuery").value.trim();
+      if (!query) return alert("Please enter a query.");
+
+      startLoading("text-loading");
+
+      const response = await fetch("http://10.xx.xx.xx:5001/api/text_image_retrieval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query_text: query }),
+      });
+
+      stopLoading("text-loading");
+      const data = await response.json();
+
+      const resultContainer = document.getElementById("text-results");
+      resultContainer.innerHTML = "<div class='retrieved-images'></div>";
+      const gallery = resultContainer.querySelector(".retrieved-images");
+
+      data.results.slice(0, 5).forEach((item, idx) => {
+        const img = document.createElement("img");
+        img.src = item.path;
+        gallery.appendChild(img);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -4,8 +4,8 @@
 *Course Project*
 
 **Team Members:**  
-- Yufeng Yang  
 - Mingyang Wu  
+- Yufeng Yang  
 - Yu-Hsuan Ho  
 - Yiming Xiao
 

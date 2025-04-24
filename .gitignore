@@ -1,10 +1,17 @@
 *__pycache__
+*.vscode
 
 # dataset
-datasets/stable_diffusion
-temp_frames
+aigc_scripts/generation_prompts.json
 uploads
+datasets/generated_images
+datasets/DiffusionDB
+datasets/DiffusionDB_raw
+datasets/GAIC
+datasets/open_vid
 
+
+# scripts
 agent_models/blip.py
 word_tag.py
 image_retrieval_api_local.py
