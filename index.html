@@ -2,13 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Generated Gallery</title>
+  <title>Image Gallery Retrieval</title>
   <style>
     body {
       margin: 0;
       background-color: #1a1a1d;
       font-family: 'Segoe UI', sans-serif;
       color: white;
+    }
+    .title-logo-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .logo-image {
+      height: 48px;
+      width: auto;
     }
     .header {
       display: flex;
@@ -335,12 +344,20 @@
 
 <body>
   <div class="header">
-    <div class="title-group">
+    <!-- <div class="title-group">
       <div class="main-title">Image Gallery Retrieval</div>
       <div class="subtitle">Discover, Rate, and Retrieve AI-Generated / Natural Visual Assets</div>
+    </div> -->
+    <div class="title-logo-group">
+      <img src="assets/project_logo.png" alt="Logo" class="logo-image" />
+      <div class="title-group">
+        <div class="main-title">Image Gallery Retrieval</div>
+        <div class="subtitle">Discover, Rate, and Retrieve AI-Generated / Natural Visual Assets</div>
+      </div>
     </div>
     <div class="right-buttons">
       <button class="refresh-button" onclick="loadImages()">Refresh</button>
+      <a href="search.html" class="nav-link">Search</a>
       <a href="#" class="nav-link">Business</a>
       <a href="#" class="nav-link">Pricing</a>
       <a href="#" class="nav-link">Sign in</a>
@@ -353,7 +370,7 @@
       <!-- <div style="text-align: center; font-size: 14px; color: #ccc;">Random Sample</div> -->
     </div>
     <div class="text-box">
-      <h3>Text-to-Image Retrieval</h3>
+      <h3>Describe to Discover</h3>
       <input type="text" id="textQueryInput" placeholder="Describe the image you're looking for...">
       <button onclick="searchByText()">Search by Text</button>
     </div>
