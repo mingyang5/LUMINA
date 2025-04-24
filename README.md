@@ -49,25 +49,54 @@ pip install -U flash-attn --no-build-isolation
 - [x] Qwen2.5 for word_tag
 
 
+## data
+
 ## Implementation
 
+1. Replace the IP addresses `"http://10.xx.xx.xx:5000"` and `"http://10.xx.xx.xx:5001"` in your local webpage files with the IP address of your remote server.
+
+2. Data Preparation
 ```bash
-# text-image retrieval
-# CUDA_VISIBLE_DEVICES=1 python image_retrieval.py --text_image_retrieval
-# CUDA_VISIBLE_DEVICES=3 vllm serve Qwen/Qwen2.5-VL-7B-Instruct --port 8000 --host 0.0.0.0 --dtype bfloat16 --limit-mm-per-prompt image=15,video=5
+# get diffusiondb data
+# Download DiffusionDB data
+cd datasets
+mkdir -p datasets/DiffusionDB
+mkdir -p datasets/DiffusionDB_raw
 
+cd DiffusionDB_raw
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000001.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000002.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000003.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000004.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000005.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000006.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000007.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000008.zip"
+wget "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/main/diffusiondb-large-part-1/part-000009.zip"
 
-# The following implementation enables web-based image retrieval, but it does not use a VLM verifier.
-# first step: 本地运行 index.html
-# Please first modify the `IP address` on line 248, 278, 313  of index.html.
-# The IP address should be the address of your remote server.
-cd xx/image_retrieval 
-python3 -m http.server 8000
-# web 打开 http://localhost:8000/index.html
+cd ..
+unzip DiffusionDB_raw/part-000001.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000002.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000003.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000004.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000005.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000006.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000007.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000008.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000009.zip -d ./DiffusionDB
+unzip DiffusionDB_raw/part-000010.zip -d ./DiffusionDB
 
+mv ./DiffusionDB/*.json ./DiffusionDB_raw
+```
 
-# second step: 远端服务器运行：python image_retrieval_api.py
-# Please modify the `remote_server_ip` on line 9 of image_retrieval_api.py.
-python image_retrieval_api.py
+3. Start the servers on the remote machine:
+```bash
+python image_retrieval_backend.py    # for index.html page
+python image_search_backend.py       # for search.html page
+```
 
+4. Open corresponding local webpage files:
+```bash
+./webpage/index.html
+./webpage/search.html
 ```
