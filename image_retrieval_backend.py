@@ -12,7 +12,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 DATASET_FOLDERS = [
     "./datasets/DiffusionDB",
-    "./datasets/generated_images",
+    "./datasets/image_video_generation",
     "./datasets/GAIC"
     "./datasets/open_vid"
 ]

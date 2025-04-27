@@ -1,14 +1,17 @@
 *__pycache__
 *.vscode
 
+
 # dataset
 aigc_scripts/generation_prompts.json
 uploads
-datasets/generated_images
+datasets/image_video_generation
 datasets/DiffusionDB
 datasets/DiffusionDB_raw
 datasets/GAIC
 datasets/open_vid
+datasets/image_video_generation.tar.gz
+datasets/open_vid.tar.gz
 
 
 # scripts

@@ -56,6 +56,8 @@ pip install -U flash-attn --no-build-isolation
 1. Replace the IP addresses `"http://10.xx.xx.xx:5000"` and `"http://10.xx.xx.xx:5001"` in your local webpage files with the IP address of your remote server.
 
 2. Data Preparation
+We provide our generated AIGC images and videos, as well as collected data from public datasets, on [Google Drive](https://drive.google.com/drive/folders/1XByO7IQ6xKfMn0guhhmrAutU360Tc4iN?usp=drive_link).
+
 ```bash
 # get diffusiondb data
 # Download DiffusionDB data

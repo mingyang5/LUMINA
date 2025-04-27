@@ -18,7 +18,7 @@ from agent_models.utils import *
 # Same dataset folders as original structure
 DATASET_FOLDERS = [
     "./datasets/DiffusionDB",
-    "./datasets/generated_images",
+    "./datasets/image_video_generation",
     "./datasets/GAIC",
     "./datasets/open_vid"
 ]
