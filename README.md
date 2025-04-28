@@ -2,6 +2,8 @@
 
 **CSCE 670 — Information Storage & Retrieval**  
 *Course Project*
+- [video-demo-short](https://youtu.be/PyBDFlzoCmU)
+- [video-demo-long](https://drive.google.com/file/d/1SF4K0pgLh5PRGWk-yDoucQXQU03aElCJ/view?usp=drive_link)
 
 **Team Members:**  
 - Mingyang Wu, Yufeng Yang, Yu-Hsuan Ho, Yiming Xiao
