@@ -10,7 +10,7 @@ import torch
 import torchvision.transforms as T
 
 
-def get_image_files(folder: str, exts={".jpg", ".jpeg", ".png", ".bmp"}) -> list:
+def get_image_files(folder: str, exts={".jpg", ".jpeg", ".png", ".bmp", ".webp"}) -> list:
     return [
         os.path.join(folder, f)
         for f in os.listdir(folder)
@@ -112,6 +112,7 @@ def clip_text_query(text, model, device, processor):
 
 #     return result_paths
 
+
 def search_and_visualize(index, query_vector, files, topk=5, visualize=False, title="Query"):
     D, I = index.search(query_vector, topk)
     result_paths = [files[i] for i in I[0]]
@@ -126,3 +127,38 @@ def search_and_visualize(index, query_vector, files, topk=5, visualize=False, ti
             sv.plot_image(img, size=(6, 6))
 
     return result_paths, distances
+
+
+# clip finetuning
+def image_folder_embed_ft(files: list, model, device, preprocess):
+    dim = 768  # if ViT-L/14
+    # dim = 512 # if ViT-B/32
+    index = faiss.IndexFlatL2(dim)
+    image_folder_feature_dict = {}
+
+    with torch.no_grad():
+        for file in tqdm(files, desc="Extracting embeddings (Fine-tuned CLIP)"):
+            try:
+                image = Image.open(file).convert("RGB")
+                image = preprocess(image).unsqueeze(0).to(device)
+                features = model.encode_image(image)
+                features = features / features.norm(dim=-1, keepdim=True)
+                features_np = features.cpu().numpy().astype("float32").reshape(1, -1)
+                index.add(features_np)
+
+                file_basename = os.path.basename(file)
+                image_folder_feature_dict[file_basename] = features_np.tolist()
+
+            except Exception as e:
+                print(f"Error processing {file}: {e}")
+
+    return index, image_folder_feature_dict
+
+def clip_text_query_ft(text, model, device):
+    import clip
+    
+    with torch.no_grad():
+        text_tokens = clip.tokenize([text]).to(device)
+        features = model.encode_text(text_tokens)
+        features = features / features.norm(dim=-1, keepdim=True)
+        return features.cpu().numpy().astype("float32").reshape(1, -1)

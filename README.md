@@ -4,12 +4,13 @@
 *Course Project*
 
 **Team Members:**  
-- Mingyang Wu  
-- Yufeng Yang  
-- Yu-Hsuan Ho  
-- Yiming Xiao
+- Mingyang Wu, Yufeng Yang, Yu-Hsuan Ho, Yiming Xiao
 
+## Architeture & webpage
 
+![Pipeline Overview](assets/pipeline.png)
+
+![Main Page Interface](assets/main_page.png)
 
 ## Environment
 
@@ -33,6 +34,7 @@ pip install -U flash-attn --no-build-isolation
 - [x] CLIP
 - [x] ChineseCLIP
 - [x] CLIPSeg
+- [x] AIGC Finetuning CLIP (you can download checkpoint here: [Google Drive](https://drive.google.com/drive/folders/1gzbKjAjS8ED1GMFFlfEiSXeGuzlCycl_?usp=drive_link))
 
 ### Supported Image-Image Retrieval Models
 

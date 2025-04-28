@@ -8,22 +8,22 @@ from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, Auto
 from qwen_vl_utils import process_vision_info
 
 
-def create_message(system_content, user_content, text_query, image_files):
+def create_message(system_content, user_content, text_query, image_paths):
     message = [
         {"role": "system", "content": system_content},
         {"role": "user", "content": []}
     ]
     
-    for img in image_files:
-        message[1]["content"].append({"type": "image", "image": img})
+    for img_path in image_paths:
+        message[1]["content"].append({"type": "image", "image": img_path})
     
-    user_text = f"{user_content}\nImages: " + ", ".join([f"<frame {i}>" for i in range(len(image_files))]) + f"\nText query: '{text_query}'"
+    user_text = f"{user_content}\nImages: " + ", ".join([f"<frame {i}>" for i in range(len(image_paths))]) + f"\nText query: '{text_query}'"
     message[1]["content"].append({"type": "text", "text": user_text})
     
     return message
 
 
-def qwen_vlm_verifier(system_prompt, user_prompt, text_query, image_files, model_id="Qwen/Qwen2.5-VL-7B-Instruct", device="cuda"):
+def qwen_vlm_verifier(system_prompt, user_prompt, text_query, image_paths, model_id="Qwen/Qwen2.5-VL-7B-Instruct", device="cuda"):
     # recommend enabling flash_attention_2 for better acceleration and memory saving, especially in multi-image and video scenarios.
     model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         model_id,
@@ -33,7 +33,7 @@ def qwen_vlm_verifier(system_prompt, user_prompt, text_query, image_files, model
     )
     processor = AutoProcessor.from_pretrained(model_id)
     
-    messages = create_message(system_prompt, user_prompt, text_query, image_files)
+    messages = create_message(system_prompt, user_prompt, text_query, image_paths)
     
     text = processor.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True
